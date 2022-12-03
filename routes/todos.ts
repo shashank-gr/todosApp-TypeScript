@@ -4,22 +4,29 @@ const router = Router();
 
 let todos: Todo[] = []; //Todo is an interface {id:string,text:string}
 
+//using Alias to define how our request body and req params look like
+type RequestBody = { text: string };
+type RequestParams = { id: string };
+
 router.get("/", (req, res) => {
   res.status(200).json({ todos });
 });
 
 router.post("/todo", (req, res) => {
-  const newTodo: Todo = { id: new Date().toISOString(), text: req.body.text };
+  const body = req.body as RequestBody;
+  const newTodo: Todo = { id: new Date().toISOString(), text: body.text };
   todos.push(newTodo);
   res.status(200).json({ todos, msg: "success" });
 });
 router.post("/todo/:id", (req, res) => {
-  const id = req.params.id;
+  const param = req.params as RequestParams;
+  const body = req.body as RequestBody;
+  const id = param.id;
   console.log(id);
   let found = false;
   for (const t of todos) {
     if (t.id === id) {
-      t.text = req.body.text;
+      t.text = body.text;
       found = true;
       break;
     }
@@ -31,8 +38,9 @@ router.post("/todo/:id", (req, res) => {
 });
 
 router.delete("/todo/:id", (req, res) => {
-  const id = req.params.id;
-  console.log(id);
+  const param = req.params as RequestParams;
+  const id = param.id;
+  // console.log(id);
   let found = false;
   todos = todos.filter((t) => {
     if (t.id !== id) {
